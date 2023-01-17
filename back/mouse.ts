@@ -1,17 +1,6 @@
 import * as readline from "node:readline";
 import { mouse, left, right, up, down } from "@nut-tree/nut-js";
 
-// (async () => {
-//   await square();
-//   await mouse.move(
-//       straightTo(
-//           centerOf(
-//               new Region(100, 100, 200, 300)
-//           )
-//       )
-//   );
-// })();
-
 export const mouseMove = async (options: { action: string; px: number }) => {
   const action = options.action;
   const px = options.px;
@@ -39,16 +28,13 @@ export const mouseMove = async (options: { action: string; px: number }) => {
   }
 
   //   console.log(process.stdin);
-
-  //   mouse.move(up(y));
-  // process.stdin.on("keypress", (ch, key) => {
+  //   process.stdin.on("keypress", (ch, key) => {
   //   console.log('got "keypress"', ch, key);
   //   if (key && key.ctrl && key.name == "c") {
   //     console.log("ctrl+c was pressed");
   //     // do something usefull
   //   }
   // });
-
   // process.stdin.setRawMode(true);
   process.stdin.resume();
 };

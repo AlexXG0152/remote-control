@@ -1,7 +1,5 @@
 import {
   Key,
-  Region,
-  centerOf,
   keyboard,
   mouse,
   left,

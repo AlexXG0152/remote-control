@@ -1,6 +1,7 @@
+import { Duplex } from "node:stream";
+import { RawData } from "ws";
 import { Point } from "@nut-tree/nut-js/dist/lib/point.class";
-import { RawData, WebSocket } from "ws";
 
-export const sendMessage = async (ws: WebSocket, data: RawData | Point) => {
-  ws.send(data.toString());
+export const sendMessage = async (stream: Duplex, data: RawData | Point) => {
+  stream.write(data.toString());
 };
