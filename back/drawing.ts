@@ -1,7 +1,6 @@
 import {
   Key,
   keyboard,
-  mouse,
   left,
   right,
   up,
@@ -10,9 +9,29 @@ import {
   Button,
   Point,
   screen,
+  mouse,
 } from "@nut-tree/nut-js";
+import { mousePosition } from "./mouse";
 
-export const drawCircle = async () => {};
+export const drawCircle = async (data: any) => {
+  const circlec = await createC(data.toString().split(" ").at(-1));
+  const mouseCoordinates = await mousePosition(data);
+  for (let i = 0; i < circlec[0].length; i++) {
+    let elementX = circlec[0][i];
+    let elementY = circlec[1][i];
+    mouse.config.mouseSpeed = 100000;
+
+    let x = mouseCoordinates.x - elementX;
+    let y = mouseCoordinates.y - elementY;
+
+    if (i === 0) {
+      moveMouseToTarget(x, y);
+    }
+    await mouse.pressButton(Button.LEFT);
+    moveMouseToTarget(x, y);
+    await mouse.releaseButton(Button.LEFT);
+  }
+};
 
 export const goToPageEnd = async () => {
   await keyboard.type(Key.End);
@@ -49,4 +68,16 @@ export const getWindowSize = async () => {
   const width = await screen.width();
   const height = await screen.height();
   return { width, height };
+};
+
+export const createC = async (r: number) => {
+  let cooX = [];
+  let cooY = [];
+
+  for (let i = 0; i <= 360; i++) {
+    cooX.push(Math.round(Math.sin((Math.PI * i) / 180) * r * 2));
+    cooY.push(Math.round(Math.cos((Math.PI * i) / 180) * r * 2));
+  }
+
+  return [cooX, cooY];
 };

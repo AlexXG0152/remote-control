@@ -99,8 +99,8 @@ wss.on("connection", (ws) => {
         await moveMouseToTarget(5, 476);
         await buttonClick();
         await goToPageEnd();
-        await moveMouseToTarget(755, 476);
-        await drawCircle();
+        await moveMouseToTarget(755, 676);
+        await drawCircle(data);
         break;
 
       case "prnt_scrn":

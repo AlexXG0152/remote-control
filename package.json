@@ -7,8 +7,6 @@
     "scripts": {
         "start": "node ./index.js",
         "start:dev": "nodemon ./index.ts",
-        "start:dev2": "start nodemon ./index.ts && nodemon ./back/server.ts",
-        "start:back": "nodemon ./back/server.ts",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "author": "",
