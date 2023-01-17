@@ -9,6 +9,7 @@ import {
   straightTo,
   Button,
   Point,
+  screen,
 } from "@nut-tree/nut-js";
 
 export const drawCircle = async () => {};
@@ -42,4 +43,10 @@ export const drawSquare = async (px: number) => {
 export const moveMouseToTarget = async (x: number, y: number) => {
   const target = new Point(x, y);
   await mouse.move(straightTo(target));
+};
+
+export const getWindowSize = async () => {
+  const width = await screen.width();
+  const height = await screen.height();
+  return { width, height };
 };
