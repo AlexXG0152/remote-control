@@ -27,7 +27,15 @@ wss.on("connection", (ws) => {
     writableObjectMode: true,
   });
 
+  const streamForScreeShoots = createWebSocketStream(ws, {
+    encoding: "utf8",
+    decodeStrings: false,
+    readableObjectMode: true,
+    writableObjectMode: true,
+  });
+
   stream.pipe(process.stdout);
+  streamForScreeShoots.pipe(process.stdout);
   // process.stdin.pipe(stream);
 
   console.log("Client connected");
@@ -65,9 +73,7 @@ wss.on("connection", (ws) => {
       case "mouse_position":
         const x = (await mousePosition(data)).x;
         const y = (await mousePosition(data)).y;
-        // sendMessage(stream, { x, y });
-        stream.write(JSON.stringify({ x, y }));
-
+        sendMessage(stream, `mouse_position ${x},${y}`);
         break;
 
       case "draw_square":
@@ -101,10 +107,9 @@ wss.on("connection", (ws) => {
         break;
 
       case "prnt_scrn":
-        // sendMessage(stream, data);
         const screen = await takeScreeenshot(data);
         const b64 = screen.toString("base64");
-        sendMessage(stream, b64);
+        sendMessage(streamForScreeShoots, `prnt_scrn ${b64}`);
         break;
 
       default:
