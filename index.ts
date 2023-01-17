@@ -10,13 +10,12 @@ import {
   buttonClick,
   moveMouseToTarget,
 } from "./back/drawing";
+import { takeScreeenshot } from "./back/screenshot";
 
 const HTTP_PORT = 8180;
 
 console.log(`Start static http server on the ${HTTP_PORT} port!`);
 httpServer.listen(HTTP_PORT);
-
-console.log("STARTUEM");
 
 const wss = new WebSocketServer({ host: "localhost", port: 8080 });
 
@@ -24,10 +23,12 @@ wss.on("connection", (ws) => {
   const stream = createWebSocketStream(ws, {
     encoding: "utf8",
     decodeStrings: false,
+    readableObjectMode: true,
+    writableObjectMode: true,
   });
 
-  // stream.pipe(process.stdout);
-  process.stdin.pipe(stream);
+  stream.pipe(process.stdout);
+  // process.stdin.pipe(stream);
 
   console.log("Client connected");
 
@@ -64,19 +65,13 @@ wss.on("connection", (ws) => {
       case "mouse_position":
         const x = (await mousePosition(data)).x;
         const y = (await mousePosition(data)).y;
-        console.log(x, y);
+        // sendMessage(stream, { x, y });
         stream.write(JSON.stringify({ x, y }));
-        break;
 
-      case "draw_circle":
-        await moveMouseToTarget(5, 476);
-        await buttonClick();
-        await goToPageEnd();
-        await moveMouseToTarget(755, 476);
-        await drawCircle();
         break;
 
       case "draw_square":
+        sendMessage(stream, data);
         await moveMouseToTarget(5, 476);
         await buttonClick();
         await goToPageEnd();
@@ -85,6 +80,7 @@ wss.on("connection", (ws) => {
         break;
 
       case "draw_rectangle":
+        sendMessage(stream, data);
         await moveMouseToTarget(5, 476);
         await buttonClick();
         await goToPageEnd();
@@ -93,6 +89,22 @@ wss.on("connection", (ws) => {
           Number(data.toString().split(" ").at(-1)),
           Number(data.toString().split(" ").at(-2))
         );
+        break;
+
+      case "draw_circle":
+        sendMessage(stream, data);
+        await moveMouseToTarget(5, 476);
+        await buttonClick();
+        await goToPageEnd();
+        await moveMouseToTarget(755, 476);
+        await drawCircle();
+        break;
+
+      case "prnt_scrn":
+        // sendMessage(stream, data);
+        const screen = await takeScreeenshot(data);
+        const b64 = screen.toString("base64");
+        sendMessage(stream, b64);
         break;
 
       default:
