@@ -91,10 +91,7 @@ wss.on("connection", (ws) => {
         await buttonClick();
         await goToPageEnd();
         await moveMouseToTarget(355, 476);
-        await drawRectangle(
-          Number(data.toString().split(" ").at(-1)),
-          Number(data.toString().split(" ").at(-2))
-        );
+        await drawRectangle(data);
         break;
 
       case "draw_circle":

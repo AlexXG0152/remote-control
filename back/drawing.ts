@@ -22,12 +22,12 @@ export const buttonClick = async () => {
   await mouse.click(Button.LEFT);
 };
 
-export const drawRectangle = async (w: number, h: number) => {
+export const drawRectangle = async (data: any) => {
   await mouse.pressButton(Button.LEFT);
-  await mouse.move(right(w));
-  await mouse.move(down(h));
-  await mouse.move(left(w));
-  await mouse.move(up(h - 5));
+  await mouse.move(right(Number(data.toString().split(" ").at(-1))));
+  await mouse.move(down(Number(data.toString().split(" ").at(-2))));
+  await mouse.move(left(Number(data.toString().split(" ").at(-1))));
+  await mouse.move(up(Number(data.toString().split(" ").at(-2)) - 5));
   await mouse.releaseButton(Button.LEFT);
 };
 
