@@ -1,36 +1,34 @@
+import jimp from "jimp";
 import { Region, screen } from "@nut-tree/nut-js";
 import { mousePosition } from "./mouse";
-import jimp from "jimp";
-import { getWindowSize } from "./drawing";
+import { checkPosition, getWindowSize } from "./drawing";
 
-export const takeScreeenshot = async (data: any) => {
+export const takeScreeenshot = async (): Promise<Buffer> => {
   const windowSize = await getWindowSize();
-  const mouseCoordinates = await mousePosition(data);
+  const mouseCoordinates = await mousePosition();
 
   const screenshotCoordinates = await checkPosition(
     windowSize,
-    mouseCoordinates
+    mouseCoordinates,
+    200
   );
 
-  const scr = await screen.grabRegion(
+  const region = await screen.grabRegion(
     new Region(screenshotCoordinates.x!, screenshotCoordinates.y!, 200, 200)
   );
 
-  const re = await new jimp(scr).getBufferAsync(jimp.MIME_PNG);
-  // await jimp.read(re, (err, res) => {
-  //   res.quality(100).write("resized.png");
-  // });
-  return new jimp(scr).getBufferAsync(jimp.MIME_PNG);
+  const fixedRGB = await region.toRGB();
+
+  return new jimp(fixedRGB).getBufferAsync(jimp.MIME_PNG);
 };
 
-export const checkPosition = async (windowSize: any, mouseCoordinates: any) => {
-  const x =
-    mouseCoordinates.x + 200 > windowSize.width
-      ? windowSize.width - 201
-      : mouseCoordinates.x;
-  const y =
-    mouseCoordinates.y + 200 > windowSize.height
-      ? windowSize.height - 201
-      : mouseCoordinates.y;
-  return { x, y };
+// YOU CAN SAVE IMAGE IN CASE IF YOU WANT, BUT SOLUTION WORKING WITHOUT SAVING - WITH ONLY BUFFER
+export const savePngToDisk = async (
+  region: Buffer,
+  name: string
+): Promise<void> => {
+  const snap = await new jimp(region).getBufferAsync(jimp.MIME_PNG);
+  await jimp.read(snap, (err, res) => {
+    res.quality(100).write(`${name}.png`);
+  });
 };

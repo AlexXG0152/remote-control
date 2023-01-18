@@ -1,16 +1,8 @@
+import internal from "node:stream";
 import { WebSocketServer, createWebSocketStream } from "ws";
 import { httpServer } from "./src/http_server/index";
-import { mouseMove, mousePosition } from "./back/mouse.js";
-import { sendMessage } from "./back/messages";
-import {
-  drawCircle,
-  goToPageEnd,
-  drawRectangle,
-  drawSquare,
-  buttonClick,
-  moveMouseToTarget,
-} from "./back/drawing";
-import { takeScreeenshot } from "./back/screenshot";
+import { dispatcher } from "./back/dispatcher";
+import { IOptions } from "./back/interfaces.interface";
 
 const HTTP_PORT = 8180;
 
@@ -20,98 +12,31 @@ httpServer.listen(HTTP_PORT);
 const wss = new WebSocketServer({ host: "localhost", port: 8080 });
 
 wss.on("connection", (ws) => {
-  const stream = createWebSocketStream(ws, {
+  const options: internal.DuplexOptions | undefined = {
     encoding: "utf8",
     decodeStrings: false,
     readableObjectMode: true,
     writableObjectMode: true,
-  });
-
-  const streamForScreeShoots = createWebSocketStream(ws, {
-    encoding: "utf8",
-    decodeStrings: false,
-    readableObjectMode: true,
-    writableObjectMode: true,
-  });
+  };
+  const stream = createWebSocketStream(ws, options);
+  const streamForScreenshots = createWebSocketStream(ws, options);
 
   stream.pipe(process.stdout);
-  streamForScreeShoots.pipe(process.stdout);
-  // process.stdin.pipe(stream);
+  streamForScreenshots.pipe(process.stdout);
+  process.stdin.pipe(stream);
 
   console.log("Client connected");
 
   stream.write([`HOST:${wss.options.host}`].toString());
   stream.write([`PORT:${wss.options.port}`].toString());
 
-  stream.on("data", async (data) => {
-    const options = {
+  stream.on("data", async (data): Promise<void> => {
+    const options: IOptions = {
       action: data.toString().split(" ")[0],
       px: Number(data.toString().split(" ").at(-1)),
     };
 
-    switch (options.action) {
-      case "mouse_up":
-        sendMessage(stream, data);
-        mouseMove(options);
-        break;
-
-      case "mouse_right":
-        sendMessage(stream, data);
-        mouseMove(options);
-        break;
-
-      case "mouse_down":
-        sendMessage(stream, data);
-        mouseMove(options);
-        break;
-
-      case "mouse_left":
-        sendMessage(stream, data);
-        mouseMove(options);
-        break;
-
-      case "mouse_position":
-        const x = (await mousePosition(data)).x;
-        const y = (await mousePosition(data)).y;
-        sendMessage(stream, `mouse_position ${x},${y}`);
-        break;
-
-      case "draw_square":
-        sendMessage(stream, data);
-        await moveMouseToTarget(5, 476);
-        await buttonClick();
-        await goToPageEnd();
-        await moveMouseToTarget(55, 476);
-        await drawSquare(options.px);
-        break;
-
-      case "draw_rectangle":
-        sendMessage(stream, data);
-        await moveMouseToTarget(5, 476);
-        await buttonClick();
-        await goToPageEnd();
-        await moveMouseToTarget(355, 476);
-        await drawRectangle(data);
-        break;
-
-      case "draw_circle":
-        sendMessage(stream, data);
-        await moveMouseToTarget(5, 476);
-        await buttonClick();
-        await goToPageEnd();
-        await moveMouseToTarget(755, 676);
-        await drawCircle(data);
-        break;
-
-      case "prnt_scrn":
-        const screen = await takeScreeenshot(data);
-        const b64 = screen.toString("base64");
-        sendMessage(streamForScreeShoots, `prnt_scrn ${b64}`);
-        break;
-
-      default:
-        break;
-    }
+    await dispatcher(stream, streamForScreenshots, data, options);
   });
 
   stream.on("close", () => {
