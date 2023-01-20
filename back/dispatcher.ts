@@ -1,13 +1,6 @@
 import stream from "stream";
 import { Point } from "@nut-tree/nut-js";
-import {
-  moveMouseToTarget,
-  buttonClick,
-  goToPageEnd,
-  drawSquare,
-  drawRectangle,
-  drawCircle,
-} from "./drawing";
+import { drawSquare, drawRectangle, drawCircle } from "./drawing";
 import { IOptions } from "./interfaces.interface";
 import { sendMessage } from "./messages";
 import { mouseMove, mousePosition } from "./mouse";
@@ -21,22 +14,22 @@ export const dispatcher = async (
 ): Promise<void> => {
   switch (options.action) {
     case "mouse_up":
-      sendMessage(stream, data);
+      sendMessage(stream, `${options.action}_${options.px}`);
       mouseMove(options);
       break;
 
     case "mouse_right":
-      sendMessage(stream, data);
+      sendMessage(stream, `${options.action}_${options.px}`);
       mouseMove(options);
       break;
 
     case "mouse_down":
-      sendMessage(stream, data);
+      sendMessage(stream, `${options.action}_${options.px}`);
       mouseMove(options);
       break;
 
     case "mouse_left":
-      sendMessage(stream, data);
+      sendMessage(stream, `${options.action}_${options.px}`);
       mouseMove(options);
       break;
 
@@ -47,29 +40,17 @@ export const dispatcher = async (
       break;
 
     case "draw_square":
-      sendMessage(stream, data);
-      await moveMouseToTarget(5, 476);
-      await buttonClick();
-      await goToPageEnd();
-      await moveMouseToTarget(55, 476);
+      sendMessage(stream, `${options.action}_${options.px}`);
       await drawSquare(options.px);
       break;
 
     case "draw_rectangle":
-      sendMessage(stream, data);
-      await moveMouseToTarget(5, 476);
-      await buttonClick();
-      await goToPageEnd();
-      await moveMouseToTarget(355, 476);
+      sendMessage(stream, `${options.action}_${options.px}`);
       await drawRectangle(data as string);
       break;
 
     case "draw_circle":
-      sendMessage(stream, data);
-      await moveMouseToTarget(5, 476);
-      await buttonClick();
-      await goToPageEnd();
-      await moveMouseToTarget(755, 676);
+      sendMessage(stream, `${options.action}_${options.px}`);
       await drawCircle(data as string);
       break;
 

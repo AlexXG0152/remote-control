@@ -41,7 +41,7 @@ export const drawRectangle = async (data: string): Promise<void> => {
   await mouse.move(right(Number(data.toString().split(" ").at(-1))));
   await mouse.move(down(Number(data.toString().split(" ").at(-2))));
   await mouse.move(left(Number(data.toString().split(" ").at(-1))));
-  await mouse.move(up(Number(data.toString().split(" ").at(-2)) - 5));
+  await mouse.move(up(Number(data.toString().split(" ").at(-2)) - 3));
   await mouse.releaseButton(Button.LEFT);
 };
 
@@ -51,16 +51,8 @@ export const drawSquare = async (px: number): Promise<void> => {
   await mouse.move(right(px));
   await mouse.move(down(px));
   await mouse.move(left(px));
-  await mouse.move(up(px - 5));
+  await mouse.move(up(px - 3));
   await mouse.releaseButton(Button.LEFT);
-};
-
-export const goToPageEnd = async (): Promise<void> => {
-  await keyboard.type(Key.End);
-};
-
-export const buttonClick = async (): Promise<void> => {
-  await mouse.click(Button.LEFT);
 };
 
 export const moveMouseToTarget = async (

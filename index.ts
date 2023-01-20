@@ -41,10 +41,11 @@ wss.on("connection", (ws) => {
 
   stream.on("close", () => {
     console.log("Client disconnected");
+    process.exit();
   });
 
   stream.on("error", () => {
-    console.log("Some Error occurred");
+    console.log("Some Error occurred"); 
   });
 });
 
